@@ -23,14 +23,18 @@ class WaveletFromModel():
 
 
 class ErrorCalculator():
-    def __init__(self, f1, f2):
+    def __init__(self, f1, f2, ml_checker):
         self.f_calc = f1
         self.f_real = f2
+        self.integrate_function = self.mlintegrated if ml_checker else self.integrated
 
     def integrated(self, x):
         return (self.f_calc(x) - self.f_real(x)) ** 2
 
+    def mlintegrated(self, x):
+        return (self.f_calc([x]) - self.f_real(x)) ** 2
+
     def calculate_integral(self):
-        I = integrate.quad(self.integrated, -1, 1)
+        I = integrate.quad(self.integrate_function, -1, 1)
         err = np.sqrt(I[0])
         return err

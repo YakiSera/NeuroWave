@@ -5,6 +5,7 @@ import math
 from modelbuilder import ModelBuilder
 import time
 from save_to_file import save_all
+import pywt
 
 
 def func_sin(x):
@@ -27,11 +28,12 @@ def func_x4(x):
     return x * x * x * x
 
 
-min_num = 7
-max_num = 7
-epochs = 25
-layers.real_func = func_x2
-in_val, out_val = layers.make_data_sets(-1, 1, 5000)
+isFromML: bool = True
+min_num: int = 10
+max_num: int = 10
+epochs: int = 5
+layers.real_func = func_x3
+in_val, out_val = layers.make_data_sets(-1, 1, 2000)
 
 models = [ModelBuilder(num_of_neurons=i, data_x=in_val, data_y=out_val, infunc='gauss') for i in
           range(min_num, max_num + 1)]
@@ -50,16 +52,16 @@ for model in models:
                          gauss_func, model.num_of_neurons))
 
 print(
-    "Value from ML: {ml} | Value from WFM: {wfm} | Real value: {real}".format(ml=models[0].predict([0.5]),
-                                                                              wfm=wave_forms[0].calculate(0.5),
-                                                                              real=layers.real_func(0.5)))
+    "Value from ML: {ml} | Value from WFM: {wfm} | Real value: {real}".format(ml=models[0].predict([1.5]),
+                                                                              wfm=wave_forms[0].calculate(1.5),
+                                                                              real=layers.real_func(1.5)))
 
 for i in range(0, len(wave_forms)):
     t0 = time.perf_counter()
     wave_forms[i].calculate(0.5)
     t1 = time.perf_counter() - t0
     time_calc_elapsed.append(t1)
-    err = ErrorCalculator(f1=wave_forms[i].calculate, f2=layers.real_func)
+    err = ErrorCalculator(f1=models[i].predict if isFromML else wave_forms[i].calculate, f2=layers.real_func, ml_checker=isFromML)
     integral_err = err.calculate_integral()
     errors_list.append(integral_err)
     print("[{num}] [education time: {ed_time}] [calculation time: {calc_time}] Погрешность по формуле 1: {error1}"
@@ -80,11 +82,10 @@ for wave in wave_forms:
 """
 
 save_all(errors_list, time_education_elapsed, time_calc_elapsed)
-
-gf_x = [i / 250 for i in range(-250, 250)]
-gf_y = [layers.real_func(gf_x[i]) for i in range(500)]
-# predictions = [wave_forms[-1].calculate(gf_x[i]) for i in range(500)]
-predictions = [models[0].predict([gf_x[i]]) for i in range(500)]
+x_scale_factor = 250
+gf_x = [i / x_scale_factor for i in range(-x_scale_factor, x_scale_factor)]
+gf_y = [layers.real_func(gf_x[i]) for i in range(x_scale_factor * 2)]
+predictions = [models[0].predict([gf_x[i]]) for i in range(x_scale_factor * 2)]
 
 plt.clf()
 plt.plot(gf_x, predictions, 'b', label="Аппроксимация")
