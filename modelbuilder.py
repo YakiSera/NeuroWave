@@ -20,7 +20,8 @@ class ModelBuilder():
         self.model = keras.Model(self.x, self.y)
 
     def start_training(self, epochs=21):
-        self.model.compile(optimizer='sgd', loss='mse')
+        optimizer = tf.keras.optimizers.SGD(learning_rate=0.01)
+        self.model.compile(optimizer, loss=tf.keras.losses.logcosh)#loss='mse')
         self.model.summary()
         self.model.fit(self.in_val, self.out_val, epochs=epochs, batch_size=1, verbose=1)
 

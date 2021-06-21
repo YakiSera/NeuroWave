@@ -32,6 +32,13 @@ class FourierSeries():
             sum += self.An[i]*np.cos(i * x) + self.Bn[i]*np.sin(i * x)
         return sum
 
+    def show_plot(self):
+        #plt.clf()
+        plt.plot(self.x, [self.calculate_result(self.x[i]) for i in range(1000)], 'b', label="Аппроксимация")
+        plt.plot(self.x, [self.func(self.x[i]) for i in range(1000)], 'r--', label="Исходная функция")
+        plt.legend()
+        plt.show()
+
 # Тестирование класса
 def test_func(x):
     return x * x
