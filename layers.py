@@ -24,7 +24,8 @@ def make_data_sets(range_a, range_b, amount):
         range_a=range_a, range_b=range_b, amount=amount))
     return x, [real_func(x[i]) for i in range(amount)]
 
-init_rand = keras.initializers.random_uniform(minval=-1., maxval=1.)
+#init_rand = keras.initializers.random_uniform(minval=-1, maxval=1)
+init_rand = keras.initializers.lecun_normal(111)
 
 # https://keras.io/guides/making_new_layers_and_models_via_subclassing/
 

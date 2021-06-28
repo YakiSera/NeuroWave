@@ -38,3 +38,9 @@ class ErrorCalculator():
         I = integrate.quad(self.integrate_function, -1, 1)
         err = np.sqrt(I[0])
         return err
+
+    def calculate_integral_array(self, dx):
+        grid = np.arange(-1, 1, dx)
+        resf = self.integrate_function(grid)
+        I = integrate.simpson(resf, grid)
+        return I
